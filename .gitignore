@@ -1,0 +1,7 @@
+pgftesting
+*~
+*.bak
+*.kate-swp
+__pycache__
+*.pyc
+*.pyo
