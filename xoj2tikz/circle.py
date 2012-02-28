@@ -19,38 +19,39 @@
 
 from copy import copy
 
-class Stroke:
+class Circle:
     """
-    Stores information about a Xournal penstroke, possibly with variable width.
+    Represents a Circle (center and radius).
     
-    A Stroke is created by the Xournal tools "pen", "highlighter" or "eraser".
-    If a stroke has variable width, self.coordList contains tuples of three
-    else tuples of two floats.
+    Note that Xournal does not save circles as such in their .xoj files.
+    We need to do our best to recognize them.
     """
-    def __init__(self, color=None, coordList=None, width=0):
+    def __init__(self, color=None, x=-1.0, y=-1.0, radius=0, width=0):
         """
         Constructor
         
         Keyword arguments:
-        color -- Stroke color, tuple of red, green, blue and opacity (default (0,0,0,1.0))
-        coordList -- List of coordinates the stroke goes through (default [])
+        color -- Circle color, tuple of red, green, blue and opacity (default (0,0,0,1.0))
+        x -- x-Coordinate of the center (default -1.0)
+        y -- y-Coordinate of the center (default -1.0)
+        radius -- Radius of the circle in pt (default 0)
         width -- Width of the stroke in pt (default 0)
         """
         self.color = color
         if color is None:
             self.color = (0, 0, 0, 1.0)
-        self.coordList = coordList
-        if coordList is None:
-            self.coordList = []
+        self.x = x
+        self.y = y
+        self.radius = radius
         self.width = width
         
     def __copy__(self):
-        return Stroke(color=self.color, coordList=copy(self.coordList),
+        return Circle(color=self.color, x=self.x, y=self.y, radius=self.radius,
                       width=self.width)
     
     def __str__(self):
-        return "Stroke with color '{}' and coords: {}"\
-               .format(self.color, self.coordList)
+        return "Circle at ({},{}) with radius {}pt, color '{}' and width {}pt"\
+               .format(self.x, self.y, self.radius, self.color, self.width)
 
     def print(self, prefix=""):
         """
@@ -60,5 +61,6 @@ class Stroke:
         Keyword arguments:
         prefix -- Prefix output with this string (default "")
         """
-        print("{}Stroke with color '{}' and coords: {}"
-              .format(prefix, self.color, self.coordList))
+        print("{}Circle at ({},{}) with radius {}pt, color '{}' and width {}pt"\
+              .format(prefix, self.x, self.y, self.radius, self.color,
+                      self.width))

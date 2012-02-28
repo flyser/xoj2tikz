@@ -111,12 +111,36 @@ class TikzLineWidth(OutputModule):
         coordX = textbox.x
         coordY = textbox.y + 2.5  # shift down by 2.5pt to match Xournals output
         texColor = self.toTexColor(textbox.color)
+        opacity = textbox.color[3]
         text = textbox.text.replace('\n', "\\\\")
 
         self.write("  \\node[align=left, below right, inner sep=0pt")
         if texColor != "black":
             self.write("," + texColor)
+        if opacity != 1.0:
+            self.write(",opacity={:.3}".format(opacity))
         self.write("] at ({},{}) {{{}}};\n".format(coordX, coordY, text))
+
+    def circle(self, circle):
+        """
+        Write a circle in the output file.
+        
+        The output will look similar to this:
+          \draw[line width=width, color, opacity=0.5] (x,y) circle (radius);
+        """
+        coordX = circle.x
+        coordY = circle.y
+        width = circle.width
+        texColor = self.toTexColor(circle.color)
+        opacity = circle.color[3]
+        radius = circle.radius
+
+        self.write("  \\draw[line width={}pt".format(width))
+        if texColor != "black":
+            self.write("," + texColor)
+        if opacity != 1.0:
+            self.write(",opacity={:.3}".format(opacity))
+        self.write("] ({},{}) circle ({});\n".format(coordX, coordY, radius))
 
     def footer(self):
         """Close the tikzpicture environment."""

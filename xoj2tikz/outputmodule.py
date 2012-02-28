@@ -21,6 +21,7 @@ import sys
 
 from .stroke import Stroke
 from .textbox import TextBox
+from .circle import Circle
 
 COLOR_PREFIX = "xou"
 
@@ -151,6 +152,8 @@ class OutputModule:
                 self.stroke(item)
             elif isinstance(item, TextBox):
                 self.textbox(item)
+            elif isinstance(item, Circle):
+                self.circle(item)
             else:
                 self.errorMsg("Warning: Unknown Object in itemList of {} on {}"
                               .format(layer, self.currentPage))
@@ -166,6 +169,14 @@ class OutputModule:
     def textbox(self, textbox):
         """
         Write a text box in the output file.
+        
+        Override this, if you want to write an output module.
+        """
+        pass
+
+    def circle(self, circle):
+        """
+        Write a circle in the output file.
         
         Override this, if you want to write an output module.
         """
