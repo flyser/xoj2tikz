@@ -24,6 +24,7 @@ from xml.etree.ElementTree import XMLParser
 
 from xoj2tikz.xournalparser import XournalParser
 from xoj2tikz.outputmodules.tikzlinewidth import TikzLineWidth
+from xoj2tikz import optimizations
 
 def main():
     #TODO: use argparse
@@ -37,6 +38,8 @@ def main():
     parser = XMLParser(target=XournalParser())
     parser.feed(document)
     document = parser.close()
+    
+    optimizations.runAll(document)
     
     output = TikzLineWidth(document, output=sys.stdout)
     output.printAll()
