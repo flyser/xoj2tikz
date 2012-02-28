@@ -142,6 +142,29 @@ class TikzLineWidth(OutputModule):
             self.write(",opacity={:.3}".format(opacity))
         self.write("] ({},{}) circle ({});\n".format(coordX, coordY, radius))
 
+    def rectangle(self, rect):
+        """
+        Write a rectangle in the output file.
+        
+        The output will look similar to this:
+          \draw[line width=width, color, opacity=0.5] (x1,y1) rectangle (x2,y2);
+        """
+        firstX = rect.x1
+        firstY = rect.y1
+        secondX = rect.x2
+        secondY = rect.y2
+        width = rect.width
+        texColor = self.toTexColor(rect.color)
+        opacity = rect.color[3]
+
+        self.write("  \\draw[line width={}pt".format(width))
+        if texColor != "black":
+            self.write("," + texColor)
+        if opacity != 1.0:
+            self.write(",opacity={:.3}".format(opacity))
+        self.write("] ({},{}) rectangle ({},{});\n".format(firstX, firstY,
+                                                           secondX, secondY))
+
     def footer(self):
         """Close the tikzpicture environment."""
         self.write("\\end{tikzpicture}\n")

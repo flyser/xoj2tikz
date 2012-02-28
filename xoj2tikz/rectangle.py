@@ -19,39 +19,42 @@
 
 from copy import copy
 
-class Circle:
+class Rectangle:
     """
-    Represents a Circle (center and radius).
+    Represents a Rectangle (identfied by its lower left and upper right corner).
     
-    Note that Xournal does not save circles as such in its .xoj files.
+    Note that Xournal does not save rectangles as such in its .xoj files.
     We need to do our best to recognize them.
     """
-    def __init__(self, color=None, x=-1.0, y=-1.0, radius=0, width=0):
+    def __init__(self, color=None, x1=-1.0, y1=-1.0, x2=-1.0, y2=-1.0, width=0):
         """
         Constructor
         
         Keyword arguments:
-        color -- Circle color, tuple of red, green, blue and opacity (default (0,0,0,1.0))
-        x -- x-Coordinate of the center (default -1.0)
-        y -- y-Coordinate of the center (default -1.0)
-        radius -- Radius of the circle in pt (default 0)
+        color -- Rectangle color, tuple of red, green, blue and opacity (default (0,0,0,1.0))
+        x1 -- x-Coordinate of lower left corner (default -1.0)
+        y1 -- y-Coordinate of lower left corner (default -1.0)
+        x2 -- x-Coordinate of upper right corner (default -1.0)
+        y2 -- y-Coordinate of upper right corner (default -1.0)
         width -- Width of the stroke in pt (default 0)
         """
         self.color = color
         if color is None:
             self.color = (0, 0, 0, 1.0)
-        self.x = x
-        self.y = y
-        self.radius = radius
+        self.x1 = x1
+        self.y1 = y1
+        self.x2 = x2
+        self.y2 = y2
         self.width = width
         
     def __copy__(self):
-        return Circle(color=self.color, x=self.x, y=self.y, radius=self.radius,
-                      width=self.width)
+        return Rectangle(color=self.color, x1=self.x1, y1=self.y1,
+                         x2=self.x2, y2=self.y2, width=self.width)
     
     def __str__(self):
-        return "Circle at ({},{}) with radius {}pt, color '{}' and width {}pt"\
-               .format(self.x, self.y, self.radius, self.color, self.width)
+        return "Rectangle at ({},{}) to ({},{}) with color '{}' and width {}pt"\
+               .format(self.x1, self.y1, self.x2, self.y2, self.color,
+                       self.width)
 
     def print(self, prefix=""):
         """
@@ -61,6 +64,6 @@ class Circle:
         Keyword arguments:
         prefix -- Prefix output with this string (default "")
         """
-        print("{}Circle at ({},{}) with radius {}pt, color '{}' and width {}pt"\
-              .format(prefix, self.x, self.y, self.radius, self.color,
+        print("{}Rectangle at ({},{}) to ({},{}) with color '{}' and width {}pt"\
+              .format(prefix, self.x1, self.y1, self.x2, self.y2, self.color,
                       self.width))

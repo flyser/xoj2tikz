@@ -23,6 +23,7 @@ from .page import Page
 from .layer import Layer
 from .stroke import Stroke
 from .textbox import TextBox
+from .rectangle import Rectangle
 from .circle import Circle
 
 """
@@ -58,6 +59,8 @@ def runAll(obj):
         detectRectangle(obj)
         simplifyStrokes(obj)
     elif isinstance(obj, TextBox):
+        pass
+    elif isinstance(obj, Rectangle):
         pass
     elif isinstance(obj, Circle):
         pass
