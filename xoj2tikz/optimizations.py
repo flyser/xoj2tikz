@@ -32,37 +32,25 @@ improve the quality of the output file.
 """
 
 def detectCircle(stroke):
-    pass
+    return stroke 
 
 def detectRectangle(stroke):
-    pass
+    return stroke
 
 def simplifyStrokes(stroke):
-    pass
+    return stroke
 
+def runAll(document):
+    """
+    Iterate over a list of pages and run all optimization algorithms on them.
+    """
+    for page in document:
+        for layer in page.layerList:
+            inplace_map(simplifyStrokes, layer.itemList)
+            inplace_map(detectCircle, layer.itemList)
+            inplace_map(detectRectangle, layer.itemList)
 
-def runAll(obj):
-    """
-    This is a recursive function. You can throw any list or instance of
-    Page, Layer, Stroke and so on at it and it will run all optimization
-    algorithms on it.
-    """
-    if isinstance(obj, list):
-        for item in obj:
-            runAll(item)
-    elif isinstance(obj, Page):
-        runAll(obj.layerList)
-    elif isinstance(obj, Layer):
-        runAll(obj.itemList)
-    elif isinstance(obj, Stroke):
-        detectCircle(obj)
-        detectRectangle(obj)
-        simplifyStrokes(obj)
-    elif isinstance(obj, TextBox):
-        pass
-    elif isinstance(obj, Rectangle):
-        pass
-    elif isinstance(obj, Circle):
-        pass
-    else:
-        print("Warning: Unknown Type, not optimizing", file=sys.stderr)
+def inplace_map(function, iterable):
+    """Similar to pythons map() builtin, but it works in-place."""
+    for i, item in enumerate(iterable):
+        iterable[i] = function(item)
