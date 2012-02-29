@@ -27,8 +27,8 @@ from .rectangle import Rectangle
 from .circle import Circle
 
 """
-This is a collection of functions to simplify Strokes and detect shapes to
-improve the quality of the output file.
+This is a collection of functions to simplify strokes and detect shapes to
+improve the quality and size of the output file.
 """
 
 def detectCircle(stroke):
