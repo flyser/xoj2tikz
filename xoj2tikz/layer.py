@@ -32,7 +32,8 @@ class Layer:
         
         Keyword arguments:
         number -- Layer number (default 0)
-        itemList -- List of items, could be Stroke or TextBox objects for example (default [])
+        itemList -- List of items, could be Stroke or TextBox objects for
+                    example (default [])
         """
         self.number = number
         self.itemList = itemList

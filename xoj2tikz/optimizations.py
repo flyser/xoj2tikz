@@ -33,7 +33,7 @@ improve the quality and size of the output file.
 """
 
 def detectCircle(stroke):
-    return stroke 
+    return stroke
 
 def detectRectangle(stroke):
     return stroke
