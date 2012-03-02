@@ -81,7 +81,7 @@ class TikzLineWidth(OutputModule):
         width = stroke.width
         
         self.write("  \\draw[")
-        if len(stroke.coordList[0]) == 3:
+        if len(coordList[0]) == 3:
             # Stroke has variable width:
             if opacity == 1.0:
                 self.write("vlw={}".format(texColor))
@@ -102,14 +102,14 @@ class TikzLineWidth(OutputModule):
                 self.write(" -- ({}, {})".format(x, y))
             
             # If a stroke is closed, end it with "-- cycle".
-            lastX = stroke.coordList[-1][0]
-            lastY = stroke.coordList[-1][1]
+            lastX = coordList[-1][0]
+            lastY = coordList[-1][1]
             if firstX == lastX and firstY == lastY:
                 self.write(" -- cycle")
             else:
                 self.write(" -- ({}, {})".format(lastX, lastY))
         self.write(";\n")
-
+        
     def textbox(self, textbox):
         """
         Write a text box in the output file.
