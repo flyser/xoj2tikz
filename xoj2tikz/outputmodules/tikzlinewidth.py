@@ -97,8 +97,17 @@ class TikzLineWidth(OutputModule):
             if opacity != 1.0:
                 self.write(",opacity={:.3}".format(opacity))
             self.write("] ({}, {})".format(firstX, firstY))
-            for x, y in coordList:
+            
+            for x, y in coordList[:-1]:
                 self.write(" -- ({}, {})".format(x, y))
+            
+            # If a stroke is closed, end it with "-- cycle".
+            lastX = stroke.coordList[-1][0]
+            lastY = stroke.coordList[-1][1]
+            if firstX == lastX and firstY == lastY:
+                self.write(" -- cycle")
+            else:
+                self.write(" -- ({}, {})".format(lastX, lastY))
         self.write(";\n")
 
     def textbox(self, textbox):
