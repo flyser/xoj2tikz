@@ -24,6 +24,7 @@ from xml.etree.ElementTree import XMLParser
 
 from xoj2tikz.xournalparser import XournalParser
 from xoj2tikz.outputmodules.tikzlinewidth import TikzLineWidth
+from xoj2tikz.outputmodules.tikzdebug import TikzDebug
 from xoj2tikz import optimizations
 
 def main():
