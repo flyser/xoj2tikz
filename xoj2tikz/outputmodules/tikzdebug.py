@@ -38,7 +38,7 @@ class TikzDebug(TikzLineWidth):
         
         if len(stroke.coordList[0]) == 3:
             for x,y,w in stroke.coordList:
-                self.write("\\draw[red, line width=1pt] ({}, {}) -- cycle;".format(x, y))
+                self.write("  \\draw[red, line width=1pt] ({}, {}) -- cycle;\n".format(x, y))
         elif len(stroke.coordList[0]) == 2:
             for x,y in stroke.coordList:
-                self.write("\\draw[red, line width=1pt] ({}, {}) -- cycle;".format(x, y))
+                self.write("  \\draw[red, line width=1pt] ({}, {}) -- cycle;\n".format(x, y))
