@@ -42,32 +42,33 @@ def simplifyStrokes(stroke):
     """
     Detect collinear parts of a stroke and remove them.
     """
-    if isinstance(stroke, Stroke):
-        s = 0
-        while s < len(stroke.coordList) - 2:
-            ax = stroke.coordList[s][0]
-            ay = stroke.coordList[s][1]
-            bx = stroke.coordList[s+1][0]
-            by = stroke.coordList[s+1][1]
-            cx = stroke.coordList[s+2][0]
-            cy = stroke.coordList[s+2][1]
-            
-            # Calculate the dot / scalar product of the two vectors
-            scalarProduct = abs((ax-bx) * (bx-cx) + (ay-by) * (by-cy))
-            
-            # Calculate the lengths of both vectors (from a to b, from b to c)
-            firstLength = sqrt((ax-bx)**2 + (ay-by)**2)
-            secondLength = sqrt((bx-cx)**2 + (by-cy)**2)
-            
-            # If the product of both individual lengths is 'almost equal' to
-            # the scalar product, then these vectors are colinear.
-            # 0.99999 is an epsilon to compensate float inaccurracy.
-            # Testing has shown that this is a good value. maybe one should
-            # calculate the absolute error ...
-            if (firstLength * secondLength * 0.99999 < scalarProduct and
-                    len(stroke.coordList[s+1]) == 2):
-                del stroke.coordList[s+1]
-                continue
+    s = 0
+    
+    if not isinstance(stroke, Stroke) or len(stroke.coordList[1]) != 2:
+        return stroke
+    while s < len(stroke.coordList) - 2:
+        ax = stroke.coordList[s][0]
+        ay = stroke.coordList[s][1]
+        bx = stroke.coordList[s+1][0]
+        by = stroke.coordList[s+1][1]
+        cx = stroke.coordList[s+2][0]
+        cy = stroke.coordList[s+2][1]
+        
+        # Calculate the dot / scalar product of the two vectors
+        scalarProduct = abs((ax-bx) * (bx-cx) + (ay-by) * (by-cy))
+        
+        # Calculate the lengths of both vectors (from a to b, from b to c)
+        firstLength = sqrt((ax-bx)**2 + (ay-by)**2)
+        secondLength = sqrt((bx-cx)**2 + (by-cy)**2)
+        
+        # If the product of both individual lengths is 'almost equal' to
+        # the scalar product, then these vectors are colinear.
+        # 0.99999 is an epsilon to compensate float inaccurracy.
+        # Testing has shown that this is a good value. maybe one should
+        # calculate the absolute error ...
+        if firstLength * secondLength * 0.99999 < scalarProduct:
+            del stroke.coordList[s+1]
+        else:
             s += 1
     return stroke
 
