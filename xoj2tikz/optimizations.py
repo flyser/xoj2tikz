@@ -36,8 +36,27 @@ def detectCircle(stroke):
     return stroke
 
 def detectRectangle(stroke):
-    return stroke
-
+    """
+    Detect Rectangles, input should be a Stroke that has already been
+    simplified.
+    """
+    if (not isinstance(stroke, Stroke) or len(stroke.coordList) != 5 or 
+            stroke.coordList[-1] != stroke.coordList[0] or
+            len(stroke.coordList[1]) != 2):
+        return stroke
+    lowerLeft = [stroke.coordList[0][0], stroke.coordList[0][1]]
+    upperRight = [stroke.coordList[0][0], stroke.coordList[0][1]]
+    for s in range(len(stroke.coordList)-1):
+        coordOne = stroke.coordList[s]
+        coordTwo = stroke.coordList[s+1]
+        lowerLeft[0] = min(lowerLeft[0], coordTwo[0])
+        lowerLeft[1] = min(lowerLeft[1], coordTwo[1])
+        upperRight[0] = max(upperRight[0], coordTwo[0])
+        upperRight[1] = max(upperRight[1], coordTwo[1])
+        if coordOne[0] != coordTwo[0] and coordOne[1] != coordTwo[1]:
+            return stroke
+    return Rectangle(color=stroke.color, x1=lowerLeft[0], y1=lowerLeft[1],
+                     x2=upperRight[0], y2=upperRight[1], width=stroke.width)
 def simplifyStrokes(stroke):
     """
     Detect collinear parts of a stroke and remove them.
