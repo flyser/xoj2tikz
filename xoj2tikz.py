@@ -27,6 +27,9 @@ from xoj2tikz.outputmodules.tikzlinewidth import TikzLineWidth
 from xoj2tikz.outputmodules.tikzdebug import TikzDebug
 from xoj2tikz import optimizations
 
+DEBUG = False
+VERSION = "0.1"
+
 def main():
     #TODO: use argparse
     if (len(sys.argv) < 2):
@@ -42,7 +45,10 @@ def main():
     
     optimizations.runAll(document)
     
-    output = TikzLineWidth(document, output=sys.stdout)
+    if DEBUG:
+        output = TikzDebug(document, output=sys.stdout)
+    else:
+        output = TikzLineWidth(document, output=sys.stdout)
     output.printAll()
 
 if __name__ == "__main__":

@@ -52,13 +52,14 @@ class TikzLineWidth(OutputModule):
             for layer in page.layerList:
                 for item in layer.itemList:
                     texColor = self.toTexColor(item.color)
-                    if texColor not in colorList and texColor.startswith(COLOR_PREFIX):
+                    if (texColor not in colorList and
+                           texColor.startswith(COLOR_PREFIX)):
                         r = item.color[0]/255.0
                         g = item.color[1]/255.0
                         b = item.color[2]/255.0
+                        texColor = self.toTexColor(item.color)
                         self.write("  \\definecolor{{{}}}{{rgb}}{{{:.4},{:.4},"
-                                   "{:.4}}}\n".format(self.toTexColor(item.color),
-                                                      r, g, b))
+                                   "{:.4}}}\n".format(texColor, r, g, b))
                         colorList.append(self.toTexColor(item.color))
                         newline = '\n'
         self.write(newline)

@@ -17,7 +17,6 @@
 # You should have received a copy of the GNU General Public License
 # along with xoj2tikz.  If not, see <http://www.gnu.org/licenses/>.
 
-from ..outputmodule import OutputModule, COLOR_PREFIX
 from .tikzlinewidth import TikzLineWidth
 
 class TikzDebug(TikzLineWidth):
@@ -37,8 +36,10 @@ class TikzDebug(TikzLineWidth):
         super(TikzDebug, self).stroke(stroke)
         
         if len(stroke.coordList[0]) == 3:
-            for x,y,w in stroke.coordList:
-                self.write("  \\draw[red, line width=1pt] ({}, {}) -- cycle;\n".format(x, y))
+            for x, y, w in stroke.coordList:
+                self.write("  \\draw[red, line width=1pt] ({}, {}) -- cycle;\n"
+                           .format(x, y))
         elif len(stroke.coordList[0]) == 2:
-            for x,y in stroke.coordList:
-                self.write("  \\draw[red, line width=1pt] ({}, {}) -- cycle;\n".format(x, y))
+            for x, y in stroke.coordList:
+                self.write("  \\draw[red, line width=1pt] ({}, {}) -- cycle;\n"
+                           .format(x, y))

@@ -86,7 +86,7 @@ class OutputModule:
         elif (r, g, b) == (255, 242, 0):
             return "yellow"
         else:
-            return COLOR_PREFIX + "{:02x}{:02x}{:02x}".format(r, g, b)
+            return "{}{:02x}{:02x}{:02x}".format(COLOR_PREFIX, r, g, b)
       
     def write(self, value):
         """print() wrapper function. Writes the value to output file."""

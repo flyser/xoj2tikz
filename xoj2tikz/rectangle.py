@@ -17,8 +17,6 @@
 # You should have received a copy of the GNU General Public License
 # along with xoj2tikz.  If not, see <http://www.gnu.org/licenses/>.
 
-from copy import copy
-
 class Rectangle:
     """
     Represents a Rectangle (identfied by its lower left and upper right corner).

@@ -17,13 +17,11 @@
 # You should have received a copy of the GNU General Public License
 # along with xoj2tikz.  If not, see <http://www.gnu.org/licenses/>.
 
-import sys
 from math import sqrt
 
 from .page import Page
 from .layer import Layer
 from .stroke import Stroke
-from .textbox import TextBox
 from .rectangle import Rectangle
 from .circle import Circle
 
@@ -44,6 +42,7 @@ def detectRectangle(stroke):
             stroke.coordList[-1] != stroke.coordList[0] or
             len(stroke.coordList[1]) != 2):
         return stroke
+    
     lowerLeft = [stroke.coordList[0][0], stroke.coordList[0][1]]
     upperRight = [stroke.coordList[0][0], stroke.coordList[0][1]]
     for s in range(len(stroke.coordList)-1):
@@ -57,6 +56,7 @@ def detectRectangle(stroke):
             return stroke
     return Rectangle(color=stroke.color, x1=lowerLeft[0], y1=lowerLeft[1],
                      x2=upperRight[0], y2=upperRight[1], width=stroke.width)
+    
 def simplifyStrokes(stroke):
     """
     Detect collinear parts of a stroke and remove them.
@@ -65,6 +65,7 @@ def simplifyStrokes(stroke):
     
     if not isinstance(stroke, Stroke) or len(stroke.coordList[1]) != 2:
         return stroke
+    
     while s < len(stroke.coordList) - 2:
         ax = stroke.coordList[s][0]
         ay = stroke.coordList[s][1]

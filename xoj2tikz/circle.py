@@ -17,8 +17,6 @@
 # You should have received a copy of the GNU General Public License
 # along with xoj2tikz.  If not, see <http://www.gnu.org/licenses/>.
 
-from copy import copy
-
 class Circle:
     """
     Represents a Circle (center and radius).
