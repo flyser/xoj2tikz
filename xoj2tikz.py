@@ -27,7 +27,7 @@ from xoj2tikz import XournalParser, optimizations
 from xoj2tikz import outputmodules as Output
 
 DEBUG = False
-VERSION = "0.1"
+VERSION = "0.2-pre"
 
 class CmdlineParser():
     def __init__(self):
