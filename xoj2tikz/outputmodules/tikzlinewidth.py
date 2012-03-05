@@ -17,7 +17,7 @@
 # You should have received a copy of the GNU General Public License
 # along with xoj2tikz.  If not, see <http://www.gnu.org/licenses/>.
 
-from ..outputmodule import OutputModule, COLOR_PREFIX
+from .. import OutputModule, COLOR_PREFIX
 
 class TikzLineWidth(OutputModule):
     """An output module that supports lines with variable width."""

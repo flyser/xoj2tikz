@@ -21,10 +21,7 @@ import sys
 import re
 from copy import copy
 
-from .page import Page
-from .layer import Layer
-from .stroke import Stroke
-from .textbox import TextBox
+from . import Page, Layer, Stroke, TextBox
 
 class XournalParser:
     """

@@ -23,10 +23,8 @@ import argparse
 
 from xml.etree.ElementTree import XMLParser
 
-from xoj2tikz.xournalparser import XournalParser
-from xoj2tikz.outputmodules.tikzlinewidth import TikzLineWidth
-from xoj2tikz.outputmodules.tikzdebug import TikzDebug
-from xoj2tikz import optimizations
+from xoj2tikz import XournalParser, optimizations
+from xoj2tikz import outputmodules as Output
 
 DEBUG = False
 VERSION = "0.1"
@@ -89,9 +87,9 @@ def main():
         optimizations.runAll(document)
     
     if DEBUG:
-        output = TikzDebug(document, output=args.outputfile)
+        output = Output.TikzDebug(document, output=args.outputfile)
     else:
-        output = TikzLineWidth(document, output=args.outputfile)
+        output = Output.TikzLineWidth(document, output=args.outputfile)
     
     output.printAll()
 

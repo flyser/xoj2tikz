@@ -19,11 +19,7 @@
 
 from math import sqrt
 
-from .page import Page
-from .layer import Layer
-from .stroke import Stroke
-from .rectangle import Rectangle
-from .circle import Circle
+from . import Page, Layer, Stroke, Rectangle, Circle
 
 """
 This is a collection of functions to simplify strokes and detect shapes to

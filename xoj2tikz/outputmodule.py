@@ -19,10 +19,7 @@
 
 import sys
 
-from .stroke import Stroke
-from .textbox import TextBox
-from .rectangle import Rectangle
-from .circle import Circle
+from . import Stroke, TextBox, Rectangle, Circle
 
 COLOR_PREFIX = "xou"
 
