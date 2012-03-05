@@ -5,6 +5,7 @@ xoj2tikz converts Xournal .xoj files to TikZ code for use in LaTeX documents.
     xoj2tikz.py inputfile [-n] [-o OUTPUT]
 
 For an explanation of all options see:
+
     xoj2tikz.py --help
 
     
