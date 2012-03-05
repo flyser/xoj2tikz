@@ -22,7 +22,7 @@ For an explanation of all options see:
  * Background: **NO** (and no plans either ... maybe one day. or if someone has
    a patch for that)
  * Embedded PDFs: **NO** (not really the purpose of this tool. It might be
-   possible to build a tool based on xoj2tikz to do that)
+   possible to build a tool based on xojtools to do that)
 
 ## I really ran out of ideas ... ##
 
