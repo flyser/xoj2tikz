@@ -75,7 +75,7 @@ def simplifyStrokes(stroke):
         cy = stroke.coordList[s+2][1]
         
         # Calculate the dot / scalar product of the two vectors
-        scalarProduct = abs((ax-bx) * (bx-cx) + (ay-by) * (by-cy))
+        scalarProduct = (ax-bx) * (bx-cx) + (ay-by) * (by-cy)
         
         # Calculate the lengths of both vectors (from a to b, from b to c)
         firstLength = sqrt((ax-bx)**2 + (ay-by)**2)
