@@ -38,24 +38,37 @@ def detectRectangle(stroke):
     Detect Rectangles, input should be a Stroke that has already been
     simplified.
     """
+    coords = stroke.coordList
+    
+    #TODO: support strokes that do not have a length of 5
     if (not isinstance(stroke, Stroke) or len(stroke.coordList) != 5 or 
             stroke.coordList[-1] != stroke.coordList[0] or
             len(stroke.coordList[1]) != 2):
         return stroke
     
-    lowerLeft = [stroke.coordList[0][0], stroke.coordList[0][1]]
-    upperRight = [stroke.coordList[0][0], stroke.coordList[0][1]]
-    for s in range(len(stroke.coordList)-1):
-        coordOne = stroke.coordList[s]
-        coordTwo = stroke.coordList[s+1]
-        lowerLeft[0] = min(lowerLeft[0], coordTwo[0])
-        lowerLeft[1] = min(lowerLeft[1], coordTwo[1])
-        upperRight[0] = max(upperRight[0], coordTwo[0])
-        upperRight[1] = max(upperRight[1], coordTwo[1])
-        if coordOne[0] != coordTwo[0] and coordOne[1] != coordTwo[1]:
+    # Determine bounding box of the stroke:
+    left = right = coords[0][0]
+    top = bottom = coords[0][1]
+    for coord in coords[1:]:
+        left = min(left, coord[0])
+        right = max(right, coord[0])
+        top = max(top, coord[1])
+        bottom = min(bottom, coord[1])
+    
+    # All edges of the bounding box should be in the stroke, otherwise its not
+    # an rectangle
+    if ([left, top] not in coords or [right, top] not in coords or
+            [left, bottom] not in coords or [right, bottom] not in coords):
+        return stroke
+    
+    # Every coordinate in the stroke should be on the edges, otherwise its not
+    # a rectangle
+    for coord in coords:
+        if coord[0] not in (left, right) and coord[1] not in (top, bottom):
             return stroke
-    return Rectangle(color=stroke.color, x1=lowerLeft[0], y1=lowerLeft[1],
-                     x2=upperRight[0], y2=upperRight[1], width=stroke.width)
+    
+    return Rectangle(color=stroke.color, x1=left, y1=bottom, x2=right, y2=top,
+                     width=stroke.width)
     
 def simplifyStrokes(stroke):
     """
