@@ -19,6 +19,7 @@
 
 import sys
 import gzip
+import argparse
 
 from xml.etree.ElementTree import XMLParser
 
@@ -30,25 +31,68 @@ from xoj2tikz import optimizations
 DEBUG = False
 VERSION = "0.1"
 
+class CmdlineParser():
+    def __init__(self):
+        self.inputfile = None
+        self.optimize = True
+        self.outputfile = sys.stdout
+        
+    def parse(self):
+        parser = argparse.ArgumentParser(
+                    description="Converts Xournal .xoj files to TikZ.",
+                    epilog="e.g.: %(prog)s input.xoj -o output.tikz")
+        parser.add_argument("input", help=".xoj input file")
+        parser.add_argument("-o", "--output", nargs=1, default=[sys.stdout],
+                                help="TikZ output file")
+        parser.add_argument("-n", "--dont-optimize", dest="optimize",
+                            action="store_false",
+                            help="Don't optimize the tikz output at all")
+        parser.add_argument("-v", "--version", action="version",
+                            version="%(prog)s " + VERSION)
+        args = parser.parse_args()
+        
+        if args.input == "-":
+            self.inputfile = sys.stdin
+        else:
+            try:
+                self.inputfile = gzip.open(args.input)
+            except IOError as err:
+                print("Failed to open input file '{}':\n  {}"
+                      .format(args.input, err.strerror))
+                sys.exit(1)
+                
+        
+        if args.output[0] == sys.stdout or args.output[0] == "-":
+            self.outputfile = sys.stdout
+        else:
+            try:
+                self.outputfile = open(args.output[0], 'w')
+            except IOError as err:
+                print("Failed to open output file '{}':\n  {}"
+                      .format(args.output[0], err.strerror))
+                sys.exit(1)
+        
+        self.optimize = args.optimize
+
+
 def main():
-    #TODO: use argparse
-    if (len(sys.argv) < 2):
-        print("Usage: "+sys.argv[0]+" filename.xoj", file=sys.stderr)
-        sys.exit(1)
+    args = CmdlineParser()
+    args.parse()
     
-    xojFile = gzip.open(sys.argv[1])
-    document = xojFile.read()
+    inputData = args.inputfile.read()
 
     parser = XMLParser(target=XournalParser())
-    parser.feed(document)
+    parser.feed(inputData)
     document = parser.close()
     
-    optimizations.runAll(document)
+    if args.optimize:
+        optimizations.runAll(document)
     
     if DEBUG:
-        output = TikzDebug(document, output=sys.stdout)
+        output = TikzDebug(document, output=args.outputfile)
     else:
-        output = TikzLineWidth(document, output=sys.stdout)
+        output = TikzLineWidth(document, output=args.outputfile)
+    
     output.printAll()
 
 if __name__ == "__main__":
