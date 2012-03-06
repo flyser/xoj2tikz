@@ -150,7 +150,7 @@ class TikzLineWidth(OutputModule):
             self.write("," + texColor)
         if opacity != 1.0:
             self.write(",opacity={:.3}".format(opacity))
-        self.write("] ({},{}) circle ({:.3});\n".format(coordX, coordY, radius))
+        self.write("] ({:.3},{:.3}) circle ({:.3});\n".format(coordX, coordY, radius))
 
     def rectangle(self, rect):
         """
