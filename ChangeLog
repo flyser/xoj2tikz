@@ -1,6 +1,7 @@
 Version 0.2 (not yet released)
   * TikZ output is smaller, as redundant parts of a stroke are removed
-  * Detect rectangles and use the corresponding TikZ command to draw them
+  * Detect rectangles and circles and use the corresponding TikZ commands to
+    draw them
   * Closed paths now end with "-- cycle"
   * Proper cli with help and such
   * A quick-and-dirty xoj2pdf script, to create PDFs from xournal files
