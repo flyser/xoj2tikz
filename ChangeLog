@@ -1,4 +1,4 @@
-Version 0.2 (not yet released)
+Version 0.2 -- 2012-03-07
   * TikZ output is smaller, as redundant parts of a stroke are removed
   * Detect rectangles and circles and use the corresponding TikZ commands to
     draw them
@@ -7,6 +7,6 @@ Version 0.2 (not yet released)
   * A quick-and-dirty xoj2pdf script, to create PDFs from xournal files
     right away (warning: somewhat broken)
 
-Version 0.1 -- 2012-05-05
+Version 0.1 -- 2012-02-26
   * All basic functionally is there, should already work well for simple
     purposes
