@@ -30,12 +30,18 @@ DEBUG = False
 VERSION = "0.2-pre"
 
 class CmdlineParser():
+    """
+    Parse commandline options. Results are available as attributes of this class
+    """
     def __init__(self):
         self.inputfile = None
         self.optimize = True
         self.outputfile = sys.stdout
         
     def parse(self):
+        """
+        Parse commandline options.
+        """
         parser = argparse.ArgumentParser(
                     description="Converts Xournal .xoj files to TikZ.",
                     epilog="e.g.: %(prog)s input.xoj -o output.tikz")
@@ -71,12 +77,21 @@ class CmdlineParser():
                 sys.exit(1)
         
         self.optimize = args.optimize
+        return self
 
 
 def main():
-    args = CmdlineParser()
-    args.parse()
+    """
+    Convert a .xoj file to tikz.
     
+    1. Parse commandline arguments and get input and output file
+    2. Read inputfile
+    3. Parse the input file with a XML parser and store the document in memory
+    4. Optimize/Simplify internal representation of the xournal document
+    5. Convert the internal representation to TikZ code and write the output
+       file
+    """
+    args = CmdlineParser().parse()
     inputData = args.inputfile.read()
 
     parser = XMLParser(target=XournalParser())
@@ -90,8 +105,12 @@ def main():
         output = Output.TikzDebug(document, output=args.outputfile)
     else:
         output = Output.TikzLineWidth(document, output=args.outputfile)
-    
     output.printAll()
+    
+    if not args.outputfile.isatty():
+        args.outputfile.close()
+    if not args.inputfile.isatty():
+        args.inputfile.close()
 
 if __name__ == "__main__":
     sys.exit(main())
