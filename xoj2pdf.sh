@@ -21,7 +21,7 @@ cat << EOF > "${TEMPFILE}"
 \begin{document}
 EOF
 
-./xoj2tikz.py "$1" >> "${TEMPFILE}" || exit 1
+./xoj2tikz.py "$@" >> "${TEMPFILE}" || exit 1
 
 echo "\\end{document}" >> "${TEMPFILE}"
 
