@@ -34,7 +34,6 @@ def detectRectangle(stroke):
     Detect Rectangles, input should be a Stroke that has already been
     simplified.
     """
-    coords = stroke.coordList
     
     #TODO: support strokes that do not have a length of 5
     if (not isinstance(stroke, Stroke) or len(stroke.coordList) != 5 or 
@@ -42,6 +41,8 @@ def detectRectangle(stroke):
             len(stroke.coordList[1]) != 2):
         return stroke
     
+    coords = stroke.coordList
+
     # Determine bounding box of the stroke:
     left = right = coords[0][0]
     top = bottom = coords[0][1]
