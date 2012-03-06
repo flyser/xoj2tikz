@@ -1,6 +1,4 @@
 * Support multi-page xournal files
+* Support page background
 * More output modules
-* Proper commandline interface
-   - per-OutputModule cmdline parameters
-* Output optimization and shape detection (Simon Vetter has a patch for that):
-   - http://stackoverflow.com/questions/3813681/checking-to-see-if-3-points-are-on-the-same-line
+* possibly per-OutputModule cmdline parameters
