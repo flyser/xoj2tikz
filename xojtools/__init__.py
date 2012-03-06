@@ -7,5 +7,5 @@ from .textbox import TextBox
 from .outputmodule import OutputModule, COLOR_PREFIX
 from .xournalparser import XournalParser
 
-__all__ = ["Circle", "Layer", "optimizations" ,"OutputModule", "COLOR_PREFIX",
+__all__ = ["Circle", "Layer", "optimizations", "OutputModule", "COLOR_PREFIX",
            "Page", "Rectangle", "Stroke", "TextBox", "XournalParser"]
