@@ -17,7 +17,7 @@
 # You should have received a copy of the GNU General Public License
 # along with xoj2tikz.  If not, see <http://www.gnu.org/licenses/>.
 
-from math import sqrt
+from math import sqrt, floor, ceil
 
 from . import Page, Layer, Stroke, Rectangle, Circle
 
@@ -27,8 +27,111 @@ improve the quality and size of the output file.
 """
 
 def detectCircle(stroke):
-    return stroke
+    """
+    Detect wether the input stroke is a circle and calculate its radius and center 
+    """
+    
+    if (not isinstance(stroke, Stroke) or len(stroke.coordList) < 10 or 
+            stroke.coordList[-1] != stroke.coordList[0] or
+            len(stroke.coordList[1]) != 2):
+        return stroke
 
+    # plural of radius ;-)
+    radii = []
+    # list of coordinates that might be the center of the circle
+    xCoords = [] 
+    yCoords = []
+    distances = []
+    length = len(stroke.coordList)
+    
+    for i in range(length):
+        # Pick three points on the circle. the distance between these should be
+        # maximal to increase precision.
+        # (x1,y1) shall be point one, (x2,y2) point two, (x3,y3) point three
+        x1 = stroke.coordList[i][0]
+        y1 = stroke.coordList[i][1]
+        x2 = stroke.coordList[(i+floor(length/3))%length][0]
+        y2 = stroke.coordList[(i+floor(length/3))%length][1]
+        x3 = stroke.coordList[(i+floor(2*length/3))%length][0]
+        y3 = stroke.coordList[(i+floor(2*length/3))%length][1]
+        
+        # Calculate the point between point one and two, lets call it 'alpha'
+        x12 = (x1+x2)/2
+        y12 = (y1+y2)/2
+        # Calculate the point between point two and three, lets call it 'beta'
+        x23 = (x2+x3)/2
+        y23 = (y2+y3)/2
+        
+        # Calculate a point which forms a line with point alpha that is
+        # perpendicular to the line between point one and two,
+        # lets call it 'perp_alpha'
+        perp_x12 = x12 + (y1 - y2)
+        perp_y12 = y12 - (x1 - x2)
+        # Calculate a point which forms a line with point beta that is
+        # perpendicular to the line between point two and three,
+        # lets call it 'perp_beta'
+        perp_x23 = x23 + (y2 - y3)
+        perp_y23 = y23 - (x2 - x3)
+        
+        # Now we calculate the intersection of the lines (alpha, perp_alpha) 
+        # and (beta, perp_beta). This is the center of our circle.
+        x = (((x12*perp_y12 - y12*perp_x12)*(x23 - perp_x23) - (x12 - perp_x12)*(x23*perp_y23 - y23*perp_x23)) /
+             ((x12 - perp_x12)*(y23 - perp_y23) - (y12 - perp_y12)*(x23 - perp_x23)))
+        y = (((x12*perp_y12 - y12*perp_x12)*(y23 - perp_y23) - (y12 - perp_y12)*(x23*perp_y23 - y23*perp_x23)) /
+             ((x12 - perp_x12)*(y23 - perp_y23) - (y12 - perp_y12)*(x23 - perp_x23)))
+        xCoords.append(x)
+        yCoords.append(y)
+    
+    xAvg = sum(xCoords)/len(xCoords)
+    yAvg = sum(yCoords)/len(yCoords)
+
+    # Calculate the radius
+    for i in range(length-1):
+        x1 = stroke.coordList[i][0]
+        y1 = stroke.coordList[i][1]
+        x2 = stroke.coordList[i+1][0]
+        y2 = stroke.coordList[i+1][1]
+        x12 = (x1+x2)/2
+        y12 = (y1+y2)/2
+        
+        # Distance between point one and two
+        distances.append(sqrt((x1-x2)**2 + (y1-y2)**2))
+        
+        # Calculate two radii and store the average of the two:
+        # radius1: Distance from the center to point one
+        # radius2: Distance from the center to the line between point one and two
+        radius1 = sqrt((x1-xAvg)**2 + (y1-yAvg)**2)
+        radius2 = sqrt((x12-xAvg)**2 + (y12-yAvg)**2)
+        radii.append((radius1+radius2)/2)
+    radius = sum(radii)/len(radii)
+    
+    # If the distances between the individual coordinates of the stroke are too
+    # high or the distance varies too much, it might not be a circle.
+    # 0.04 and 3.5 are empirically determined
+    if (max(distances) - min(distances) > 0.04 or
+            sum(distances) / len(distances) > 3.5):
+        # Special case: If the circle is *very* large, stroke simplication
+        # might have kicked in and removed some coordinates of the stroke.
+        # 275 was chosen, because stroke simplification seems to remove
+        # coordinates if the radius of the circle is bigger than ~300.
+        if (radius/275 < 1 or
+                ceil(radius/275)*3.5 < sum(distances)/len(distances)):
+            return stroke
+    
+    # If the possible centers of the circle vary too much, then it may not be a
+    # circle after all.
+    # 0.02 is an empirically determined epsilon.
+    if max(xCoords) - min(xCoords) > 0.02 or max(yCoords) - min(yCoords) > 0.02:
+        return stroke
+    
+    # If the possible radii vary too much, it is not a circle.
+    # 0.02 is again an empirically determined epsilon.
+    if max(radii) - min(radii) > 0.02:
+        return stroke
+        
+    return Circle(color=stroke.color, x=xAvg, y=yAvg,
+                  radius=radius, width=stroke.width)
+    
 def detectRectangle(stroke):
     """
     Detect Rectangles, input should be a Stroke that has already been
