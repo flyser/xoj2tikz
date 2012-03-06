@@ -138,19 +138,19 @@ class TikzLineWidth(OutputModule):
         The output will look similar to this:
           \draw[line width=width, color, opacity=0.5] (x,y) circle (radius);
         """
-        coordX = circle.x
-        coordY = circle.y
+        coordX = round(circle.x, 3)
+        coordY = round(circle.y, 3)
         width = circle.width
         texColor = self.toTexColor(circle.color)
         opacity = circle.color[3]
-        radius = circle.radius
+        radius = round(circle.radius, 3)
 
         self.write("  \\draw[line width={}pt".format(width))
         if texColor != "black":
             self.write("," + texColor)
         if opacity != 1.0:
             self.write(",opacity={:.3}".format(opacity))
-        self.write("] ({:.3},{:.3}) circle ({:.3});\n".format(coordX, coordY, radius))
+        self.write("] ({},{}) circle ({});\n".format(coordX, coordY, radius))
 
     def rectangle(self, rect):
         """
