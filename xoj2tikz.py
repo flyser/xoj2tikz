@@ -107,9 +107,9 @@ def main():
         output = Output.TikzLineWidth(document, output=args.outputfile)
     output.printAll()
     
-    if not args.outputfile.isatty():
+    if args.outputfile is not sys.stdout and not args.outputfile.isatty():
         args.outputfile.close()
-    if not args.inputfile.isatty():
+    if args.inputfile is not sys.stdin and not args.inputfile.isatty():
         args.inputfile.close()
 
 if __name__ == "__main__":
