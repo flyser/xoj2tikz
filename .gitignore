@@ -5,3 +5,5 @@ pgftesting
 __pycache__
 *.pyc
 *.pyo
+*.xoj
+*.pdf
