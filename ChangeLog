@@ -1,3 +1,6 @@
+Version 0.3 (not yet released)
+  * Nothing yet
+
 Version 0.2 -- 2012-03-07
   * TikZ output is smaller, as redundant parts of a stroke are removed
   * Detect rectangles and circles and use the corresponding TikZ commands to
