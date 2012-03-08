@@ -28,7 +28,8 @@ improve the quality and size of the output file.
 
 def detectCircle(stroke):
     """
-    Detect wether the input stroke is a circle and calculate its radius and center 
+    Detect, whether the input stroke is a circle and calculate its radius and
+    center 
     """
     
     if (not isinstance(stroke, Stroke) or len(stroke.coordList) < 10 or 
