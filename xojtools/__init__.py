@@ -1,4 +1,5 @@
 from .circle import Circle
+from .ellipse import Ellipse
 from .layer import Layer
 from .page import Page
 from .rectangle import Rectangle
@@ -7,5 +8,6 @@ from .textbox import TextBox
 from .outputmodule import OutputModule, COLOR_PREFIX
 from .xournalparser import XournalParser
 
-__all__ = ["Circle", "Layer", "optimizations", "OutputModule", "COLOR_PREFIX",
-           "Page", "Rectangle", "Stroke", "TextBox", "XournalParser"]
+__all__ = ["Circle", "Ellipse", "Layer", "optimizations", "OutputModule",
+           "COLOR_PREFIX", "Page", "Rectangle", "Stroke", "TextBox",
+           "XournalParser"]

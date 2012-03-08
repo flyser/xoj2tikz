@@ -175,6 +175,29 @@ class TikzLineWidth(OutputModule):
         self.write("] ({},{}) rectangle ({},{});\n".format(firstX, firstY,
                                                            secondX, secondY))
 
+    def ellipse(self, ell):
+        """
+        Write a rectangle in the output file.
+        
+        The output will look similar to this:
+          \draw[line width=width, color, opacity=0.5] (x,y) ellipse (width and height);
+        """
+        x = round((ell.left + ell.right) / 2, 3)
+        y = round((ell.top + ell.bottom) / 2, 3)
+        halfWidth = round((ell.left - ell.right) / 2, 3)
+        halfHeight = round((ell.top - ell.bottom) / 2, 3)
+        width = ell.width
+        texColor = self.toTexColor(ell.color)
+        opacity = ell.color[3]
+
+        self.write("  \\draw[line width={}pt".format(width))
+        if texColor != "black":
+            self.write("," + texColor)
+        if opacity != 1.0:
+            self.write(",opacity={:.3}".format(opacity))
+        self.write("] ({},{}) ellipse ({} and {});\n".format(x, y, halfWidth,
+                                                             halfHeight))
+
     def footer(self):
         """Close the tikzpicture environment."""
         self.write("\\end{tikzpicture}\n")

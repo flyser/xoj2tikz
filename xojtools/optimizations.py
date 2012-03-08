@@ -19,17 +19,23 @@
 
 from math import sqrt, floor, ceil
 
-from . import Page, Layer, Stroke, Rectangle, Circle
+from . import Page, Layer, Stroke, Rectangle, Circle, Ellipse
 
 """
 This is a collection of functions to simplify strokes and detect shapes to
 improve the quality and size of the output file.
 """
 
-def detectCircle(stroke):
+def detectCircle(stroke, increasedTolerance=False):
     """
     Detect, whether the input stroke is a circle and calculate its radius and
-    center 
+    center.
+    
+    Keyword arguments:
+    stroke -- The Stroke that should be analyzed and possibly replaced.
+    increasedTolerance -- True if a varying distance between the individual
+                          points of a stroke should not be an indicator of
+                          the stroke not being a circle.
     """
     
     if (not isinstance(stroke, Stroke) or len(stroke.coordList) < 10 or 
@@ -108,15 +114,22 @@ def detectCircle(stroke):
     
     # If the distances between the individual coordinates of the stroke are too
     # high or the distance varies too much, it might not be a circle.
-    # 0.04 and 3.5 are empirically determined
-    if (max(distances) - min(distances) > 0.04 or
-            sum(distances) / len(distances) > 3.5):
+    # e1 and e2 were empirically determined
+    if increasedTolerance:
+        e1 = 0.5
+        e2 = 10
+    else:
+        e1 = 0.04
+        e2 = 3.5
+    
+    if (max(distances) - min(distances) > e1 or
+            sum(distances) / len(distances) > e2):
         # Special case: If the circle is *very* large, stroke simplication
         # might have kicked in and removed some coordinates of the stroke.
         # 275 was chosen, because stroke simplification seems to remove
         # coordinates if the radius of the circle is bigger than ~300.
         if (radius/275 < 1 or
-                ceil(radius/275)*3.5 < sum(distances)/len(distances)):
+                ceil(radius/275)*e2 < sum(distances)/len(distances)):
             return stroke
     
     # If the possible centers of the circle vary too much, then it may not be a
@@ -132,6 +145,57 @@ def detectCircle(stroke):
         
     return Circle(color=stroke.color, x=xAvg, y=yAvg,
                   radius=radius, width=stroke.width)
+    
+def detectEllipse(stroke):
+    """
+    Detect, whether the input stroke is an ellipse and calculate its center and
+    dimensions
+    
+    Make sure that ellipse detection is run *after* circle detection, as
+    ellipses are circles too ;-)
+    """
+    if (not isinstance(stroke, Stroke) or len(stroke.coordList[1]) != 2 or 
+            stroke.coordList[-1] != stroke.coordList[0]):
+        return stroke
+    
+    normalizedCoords = []
+    xList = [x for x, y in stroke.coordList]
+    yList = [y for x, y in stroke.coordList]
+    
+    # Determine bounding rectangle
+    xMax = max(xList)
+    xMin = min(xList)
+    yMax = max(yList)
+    yMin = min(yList)
+    width = xMax - xMin
+    height = yMax - yMin
+    
+    # Prevent division by zero
+    if height == 0 or width == 0:
+        return stroke
+    
+    # Normalize the bounding rectangle to a square, so we can run the circle
+    # detection code on it.
+    if height < width:
+        factor = height/width
+        newXList = [xMin + factor*(x - xMin) for x in xList]
+        newYList = yList
+    else: # width < height
+        factor = width/height
+        newXList = xList
+        newYList = [yMin + factor*(y - yMin) for y in yList]
+    for i,j in zip(newXList,newYList):
+        normalizedCoords.append([i,j])
+    
+    # If a stroke, that was transformed to fit into a square is a circle, the
+    # original stroke is in fact an ellipse.
+    circle = detectCircle(Stroke(color=stroke.color, coordList=normalizedCoords,
+                                 width=stroke.width), increasedTolerance=True)
+    if isinstance(circle, Circle):
+        return Ellipse(color=stroke.color, left=xMin, right=xMax, top=yMax,
+                       bottom=yMin, width=stroke.width)
+    else:
+        return stroke
     
 def detectRectangle(stroke):
     """
@@ -213,8 +277,9 @@ def runAll(document):
     for page in document:
         for layer in page.layerList:
             inplace_map(simplifyStrokes, layer.itemList)
-            inplace_map(detectCircle, layer.itemList)
             inplace_map(detectRectangle, layer.itemList)
+            inplace_map(detectCircle, layer.itemList)
+            inplace_map(detectEllipse, layer.itemList)
 
 def inplace_map(function, iterable):
     """Similar to pythons map() builtin, but it works in-place."""

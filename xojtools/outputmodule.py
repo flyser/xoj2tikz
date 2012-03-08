@@ -19,7 +19,7 @@
 
 import sys
 
-from . import Stroke, TextBox, Rectangle, Circle
+from . import Stroke, TextBox, Rectangle, Circle, Ellipse
 
 COLOR_PREFIX = "xou"
 
@@ -152,6 +152,8 @@ class OutputModule:
                 self.textbox(item)
             elif isinstance(item, Circle):
                 self.circle(item)
+            elif isinstance(item, Ellipse):
+                self.ellipse(item)
             elif isinstance(item, Rectangle):
                 self.rectangle(item)
             else:
@@ -182,6 +184,14 @@ class OutputModule:
         """
         pass
       
+    def ellipse(self, ellipse):
+        """
+        Write an ellipse in the output file.
+        
+        Override this, if you want to write an output module.
+        """
+        pass
+
     def rectangle(self, rect):
         """
         Write a rectangle in the output file.
