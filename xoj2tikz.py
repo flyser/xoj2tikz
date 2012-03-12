@@ -22,7 +22,7 @@ import gzip
 import argparse
 
 # Strangely, cElementTree does not work if the input is stdin
-from xml.etree.ElementTree import ParseError
+from xml.etree.cElementTree import ParseError
 
 from xojtools import optimizations, xournalparser
 from xojtools import outputmodules as Output
@@ -57,7 +57,8 @@ class CmdlineParser():
         args = parser.parse_args()
         
         if args.input == "-":
-            self.inputfile = sys.stdin
+            # workaround for cElementTree
+            self.inputfile = sys.stdin.detach()
         else:
             try:
                 self.inputfile = gzip.open(args.input)
