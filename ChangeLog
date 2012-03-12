@@ -1,5 +1,6 @@
 Version 0.3 (not yet released)
-  * Nothing yet
+  * Detect ellipses and use the corresponding TikZ commands to draw them
+  * Significant internal improvements
 
 Version 0.2 -- 2012-03-07
   * TikZ output is smaller, as redundant parts of a stroke are removed
