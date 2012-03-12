@@ -46,10 +46,6 @@ class Ellipse:
         self.bottom = bottom
         self.width = width
         
-    def __copy__(self):
-        return Ellipse(color=self.color, left=self.left, right=self.right,
-                       top=self.top, bottom=self.bottom, width=self.width)
-    
     def __str__(self):
         return "Ellipse at ({},{}) to ({},{}) with color '{}' and width {}pt"\
                .format(self.left, self.bottom, self.right, self.top, self.color,

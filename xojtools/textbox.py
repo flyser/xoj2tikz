@@ -47,10 +47,6 @@ class TextBox:
             self.color = (0, 0, 0, 1.0)
         self.text = text
     
-    def __copy__(self):
-        return TextBox(font=self.font, size=self.size, x=self.x, y=self.y,
-                       color=self.color, text=self.text)
-    
     def __str__(self):
         return "TextBox \"{}\" in {} with size {} at ({},{}) and font '{}'"\
                .format(self.text, self.color, self.size, self.x, self.y,

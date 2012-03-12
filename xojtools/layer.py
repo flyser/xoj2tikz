@@ -17,8 +17,6 @@
 # You should have received a copy of the GNU General Public License
 # along with xoj2tikz.  If not, see <http://www.gnu.org/licenses/>.
 
-from copy import copy
-
 class Layer:
     """
     Stores information about a Xournal Layer.
@@ -39,10 +37,6 @@ class Layer:
         self.itemList = itemList
         if itemList is None:
             self.itemList = []
-
-    
-    def __copy__(self):
-        return Layer(number=self.number, itemList=copy(self.itemList))
 
     def __str__(self):
         return "Layer " + str(self.number)

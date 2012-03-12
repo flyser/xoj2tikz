@@ -17,8 +17,6 @@
 # You should have received a copy of the GNU General Public License
 # along with xoj2tikz.  If not, see <http://www.gnu.org/licenses/>.
 
-from copy import copy
-
 class Stroke:
     """
     Stores information about a Xournal penstroke, possibly with variable width.
@@ -44,10 +42,6 @@ class Stroke:
             self.coordList = []
         self.width = width
         
-    def __copy__(self):
-        return Stroke(color=self.color, coordList=copy(self.coordList),
-                      width=self.width)
-    
     def __str__(self):
         return "Stroke with color '{}' and coords: {}"\
                .format(self.color, self.coordList)

@@ -17,8 +17,6 @@
 # You should have received a copy of the GNU General Public License
 # along with xoj2tikz.  If not, see <http://www.gnu.org/licenses/>.
 
-from copy import copy
-
 class Page:
     """
     Stores information of a Xournal page (e.g. list of layers, dimensions)
@@ -42,10 +40,6 @@ class Page:
         self.width = width
         self.height = height
     
-    def __copy__(self):
-        return Page(number=self.number, layerList=copy(self.layerList),
-                    width=self.width, height=self.height)
-
     def __str__(self):
         return "Page " + str(self.number)
 

@@ -45,10 +45,6 @@ class Rectangle:
         self.y2 = y2
         self.width = width
         
-    def __copy__(self):
-        return Rectangle(color=self.color, x1=self.x1, y1=self.y1,
-                         x2=self.x2, y2=self.y2, width=self.width)
-    
     def __str__(self):
         return "Rectangle at ({},{}) to ({},{}) with color '{}' and width {}pt"\
                .format(self.x1, self.y1, self.x2, self.y2, self.color,
