@@ -21,9 +21,10 @@ import sys
 import gzip
 import argparse
 
-from xml.etree.ElementTree import XMLParser
+# Strangely, cElementTree does not work if the input is stdin
+from xml.etree.ElementTree import ParseError
 
-from xojtools import XournalParser, optimizations
+from xojtools import optimizations, xournalparser
 from xojtools import outputmodules as Output
 
 DEBUG = False
@@ -92,11 +93,14 @@ def main():
        file
     """
     args = CmdlineParser().parse()
-    inputData = args.inputfile.read()
+    
+    try:
+        document = xournalparser.parse(args.inputfile)
+    except ParseError as err:
+        print("ERROR: Unable to parse input file ("+str(err)+")",
+              file=sys.stderr)
+        sys.exit(1)
 
-    parser = XMLParser(target=XournalParser())
-    parser.feed(inputData)
-    document = parser.close()
     
     if args.optimize:
         optimizations.runAll(document)

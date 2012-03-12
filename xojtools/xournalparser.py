@@ -19,188 +19,173 @@
 
 import sys
 import re
-from copy import copy
+
+# Strangely, cElementTree does not work if the input is stdin
+import xml.etree.ElementTree as ET
 
 from . import Page, Layer, Stroke, TextBox
 
-class XournalParser:
+"""A parser for Xournal files using the ElementTree API."""
+
+def parse(file):
     """
-    A parser for Xournal files implementing the ElementTree.XMLParser
-    interface.
+    Parse a Xournal .xoj file (wrapper function of ElementTree.parse())
+    
+    Note that while .xoj files are gzip-compressed xml files, this function
+    expects decompressed input.
+    
+    Positional Arguments:
+    file -- A file-like object or a string with Xournal XML content (NOT gziped)
     """
-    def __init__(self):
-        """Constructor"""
-        self.document = []
-        self.currentPage = None
-        self.currentLayer = None
-        self.currentItem = None
-        self.workWidthList = []
-        self.workCoordList = []
+    tree = ET.parse(file)
+
+    if tree.getroot().tag != "xournal":
+        raise Exception("Not a xournal document")
     
-    @staticmethod
-    def getColor(code, defaultOpacity=1.0):
-        """
-        Parse a xournal color name and return a tuple of four: (r,g,b,opacity)
-
-        Keyword arguments:
-        code -- The color string to parse (mandatory)
-        defaultOpacity -- If 'code' does not contain opacity information, use
-                          this. (default 1.0)
-        """
-        regex = re.compile(r"#([0-9a-fA-F]{2})([0-9a-fA-F]{2})"
-                            r"([0-9a-fA-F]{2})([0-9a-fA-F]{2})")
-        if code == "black":
-            r, g, b = (0, 0, 0)
-            opacity = defaultOpacity
-        elif code == "blue":
-            r, g, b = (51, 51, 204)
-            opacity = defaultOpacity
-        elif code == "red":
-            r, g, b = (255, 0, 0)
-            opacity = defaultOpacity
-        elif code == "green":
-            r, g, b = (0, 128, 0)
-            opacity = defaultOpacity
-        elif code == "gray":
-            r, g, b = (128, 128, 128)
-            opacity = defaultOpacity
-        elif code == "lightblue":
-            r, g, b = (0, 192, 255)
-            opacity = defaultOpacity
-        elif code == "lightgreen":
-            r, g, b = (0, 255, 0)
-            opacity = defaultOpacity
-        elif code == "magenta":
-            r, g, b = (255, 0, 255)
-            opacity = defaultOpacity
-        elif code == "orange":
-            r, g, b = (255, 128, 0)
-            opacity = defaultOpacity
-        elif code == "yellow":
-            r, g, b = (255, 255, 0)
-            opacity = defaultOpacity
-        elif code == "white":
-            r, g, b = (255, 255, 255)
-            opacity = defaultOpacity
-        elif re.match(regex, code):
-            r, g, b, opacity = re.match(regex, code).groups()
-            r = int(r, 16)
-            g = int(g, 16)
-            b = int(b, 16)
-            opacity = int(opacity, 16)/255.0
-        else:
-            raise Exception("invalid_color")
-        return (r, g, b, opacity)
+    return _root(tree.getroot())
     
-    def start(self, tag, attrib):
-        """
-        Called for start tags.
-        
-        Keyword arguments:
-        tag -- Name of the XML tag as a string
-        attrib -- Attributes of the XML tag as a dictionary
-        """
-        if tag == "xournal":
+def _root(root):
+    """Parse root element and its subtree"""
+    
+    pages = []
+    
+    for element in root:
+        if element.tag == "page":
+            pages.append(_page(element))
+            
+        elif element.tag == "title":
+            # The title is the same for every Xournal file -> ignore
             pass
-        elif tag == "title":
+        elif element.tag == "preview":
+            # previews are base64-encoded png (?) files -> ignore
             pass
-        elif tag == "page":
-            self.currentPage = Page(width=attrib["width"],
-                                    height=attrib["height"])
-        elif tag == "background":
-            pass
-        elif tag == "layer":
-            self.currentLayer = Layer()
-        elif tag == "stroke":
-            self.workWidthList = []
-            self.workCoordList = []
-            if attrib["tool"] in ("pen", "highlighter", "eraser"):
-                self.workWidthList = attrib["width"].split(' ')
-                if attrib["tool"] == "highlighter":
-                    color = self.getColor(attrib["color"], 0.5)
-                else:
-                    color = self.getColor(attrib["color"])
-                # Xournal files can contain negative line widths
-                width = max(0.0, float(self.workWidthList.pop(0)))
-                self.currentItem = Stroke(color=color, 
-                                          width=width)
-            else:
-                self.currentItem = None
-                print("Warning: Unknown tool '{0}' in stroke, ignoring."
-                      .format(attrib["tool"]), file=sys.stderr)
-        elif tag == "text":
-            self.currentItem = TextBox(
-                font  = attrib["font"],
-                size  = float(attrib["size"]),
-                x     = float(attrib["x"]),
-                y     = float(attrib["y"]),
-                color = self.getColor(attrib["color"]))
         else:
-            print("Warning: Unknown tag '{0}', ignoring.".format(tag),
-                  file=sys.stderr)
-
-    def data(self, data):
-        """
-        Called for character data and expanded character references and entities.
-        May be called more than once for each character data section.
+            raise Exception("Unknown tag: xournal/" + element.tag)
         
-        Keyword arguments:
-        data -- A text string. May be either an 8-bit string containing ASCII data,
-                or an Unicode string.
-        """
-        if isinstance(self.currentItem, Stroke):
-            for coord in data.strip().split(' '):
-                if len(coord) > 0:
-                    self.workCoordList.append(coord)
+    return pages
 
-        elif isinstance(self.currentItem, TextBox):
-            self.currentItem.text += data
-
-    def end(self, tag):
-        """
-        Called for end tags.
+def _page(page):
+    """Parse 'page' element and its subtree"""
+    
+    layers = []
+    width = float(page.attrib["width"])
+    height = float(page.attrib["height"])
+    
+    for element in page:
+        if element.tag == "layer":
+            layers.append(_layer(element))
         
-        Keyword arguments:
-        tag -- Name of the XML tag as a string
-        """
-        if tag == "xournal":
-            pass
-        elif tag == "title":
-            pass
-        elif tag == "page":
-            self.document.append(copy(self.currentPage))
-            del self.currentPage
-        elif tag == "background":
-            pass
-        elif tag == "layer":
-            self.currentPage.layerList.append(copy(self.currentLayer))
-            del self.currentLayer
-        elif tag == "stroke":
-            if isinstance(self.currentItem, Stroke):
-                for i in range(int(len(self.workCoordList)/2)):
-                    x = float(self.workCoordList[2*i])
-                    y = float(self.workCoordList[2*i+1])
-                    if len(self.workWidthList) > 0:
-                        width = max(0.0, float(self.workWidthList[i-1]))
-                        self.currentItem.coordList.append([x, y, width])
-                    else:
-                        self.currentItem.coordList.append([x, y])
-                self.currentLayer.itemList.append(copy(self.currentItem))
-            self.currentItem = None
-            del self.workWidthList
-            del self.workCoordList
-        elif tag == "text":
-            if isinstance(self.currentItem, TextBox):
-                self.currentLayer.itemList.append(copy(self.currentItem))
-            self.currentItem = None
-
+        elif element.tag == "background":
+            pass #TODO
         else:
-            pass
-          
-    def close(self):
-        """
-        Called when the parser is done.
+            raise Exception("Unknown tag: xournal/page/" + element.tag)
+    
+    return Page(layerList=layers, width=width, height=height)
+
+def _layer(layer):
+    """Parse 'layer' element and its subtree"""
+    
+    items = []
+    item = None
+    
+    for element in layer:
+        if element.tag == "stroke":
+            item = _stroke(element)
+        elif element.tag == "text":
+            item = _text(element)
         
-        The return value is a list of 'Page' objects.
-        """
-        return self.document
+        elif element.tag == "image":
+            pass #TODO
+        else:
+            raise Exception("Unknown tag: xournal/page/layer/" + element.tag)
+        
+        if item is not None:
+            items.append(item)
+    
+    return Layer(itemList=items)
+
+def _stroke(stroke):
+    """Parse 'stroke' element"""
+    
+    tool = stroke.attrib["tool"]
+    if tool not in ["pen", "eraser", "highlighter"]:
+        print("Warning: Unknown tool '{0}' in stroke, ignoring.".format(tool),
+              file=sys.stderr)
+        return
+
+    coordinates = []
+    temp = [float(x) for x in stroke.text.strip().split(' ') if len(x) > 0]
+    widths = [max(0.0, float(x)) for x in stroke.attrib["width"].split(' ')]
+    nominalWidth = widths.pop(0)
+    if tool == "highlighter":
+        color = getColor(stroke.attrib["color"], defaultOpacity=0.5)
+    else:
+        color = getColor(stroke.attrib["color"])
+    
+    for i in range(int(len(temp)/2)):
+        x = temp[2*i]
+        y = temp[2*i+1]
+        if len(widths) > 0:
+            width = widths[i-1]
+            coordinates.append([x, y, width])
+        else:
+            coordinates.append([x, y])
+
+    return Stroke(color=color, coordList=coordinates, width=nominalWidth)
+    
+def _text(text):
+    """Parse 'text' element"""
+    
+    font = text.attrib["font"]
+    size = float(text.attrib["size"])
+    x = float(text.attrib["x"])
+    y = float(text.attrib["y"])
+    color = getColor(text.attrib["color"])
+    content = text.text
+    
+    return TextBox(font=font, size=size, x=x, y=y, color=color, text=content)
+
+def getColor(code, defaultOpacity=1.0):
+    """
+    Parse a xournal color name and return a tuple of four: (r, g, b, opacity)
+
+    Keyword arguments:
+    code -- The color string to parse (mandatory)
+    defaultOpacity -- If 'code' does not contain opacity information, use this.
+                      (default 1.0)
+    """
+    opacity = defaultOpacity
+    regex = re.compile(r"#([0-9a-fA-F]{2})([0-9a-fA-F]{2})"
+                       r"([0-9a-fA-F]{2})([0-9a-fA-F]{2})")
+    
+    if code == "black":
+        r, g, b = (0, 0, 0)
+    elif code == "blue":
+        r, g, b = (51, 51, 204)
+    elif code == "red":
+        r, g, b = (255, 0, 0)
+    elif code == "green":
+        r, g, b = (0, 128, 0)
+    elif code == "gray":
+        r, g, b = (128, 128, 128)
+    elif code == "lightblue":
+        r, g, b = (0, 192, 255)
+    elif code == "lightgreen":
+        r, g, b = (0, 255, 0)
+    elif code == "magenta":
+        r, g, b = (255, 0, 255)
+    elif code == "orange":
+        r, g, b = (255, 128, 0)
+    elif code == "yellow":
+        r, g, b = (255, 255, 0)
+    elif code == "white":
+        r, g, b = (255, 255, 255)
+    elif re.match(regex, code):
+        r, g, b, opacity = re.match(regex, code).groups()
+        r = int(r, 16)
+        g = int(g, 16)
+        b = int(b, 16)
+        opacity = int(opacity, 16)/255.0
+    else:
+        raise Exception("invalid color")
+    return (r, g, b, opacity)
