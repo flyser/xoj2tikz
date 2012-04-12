@@ -28,7 +28,7 @@ from xojtools import optimizations, xournalparser
 from xojtools import outputmodules as Output
 
 DEBUG = False
-VERSION = "0.3-pre"
+VERSION = "0.3"
 
 class CmdlineParser():
     """

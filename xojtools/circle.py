@@ -42,7 +42,7 @@ class Circle:
         self.y = y
         self.radius = radius
         self.width = width
-        
+    
     def __str__(self):
         return "Circle at ({},{}) with radius {}pt, color '{}' and width {}pt"\
                .format(self.x, self.y, self.radius, self.color, self.width)
