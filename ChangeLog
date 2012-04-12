@@ -1,3 +1,6 @@
+Version 0.4 (not yet released)
+  * nothing so far
+
 Version 0.3 -- 2012-04-12
   * Detect ellipses and use the corresponding TikZ commands to draw them
   * Significant Xournal parser improvements
