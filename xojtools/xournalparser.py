@@ -20,7 +20,6 @@
 import sys
 import re
 
-# Strangely, cElementTree does not work if the input is stdin
 import xml.etree.cElementTree as ET
 
 from . import Page, Layer, Stroke, TextBox
