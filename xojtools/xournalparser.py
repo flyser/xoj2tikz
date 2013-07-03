@@ -76,6 +76,8 @@ def _page(page):
         
         elif element.tag == "background":
             pass #TODO
+        elif element.tag == "rulingstyle":
+            pass #TODO
         else:
             raise Exception("Unknown tag: xournal/page/" + element.tag)
     
